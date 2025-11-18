@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>肿瘤康复追踪平台</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <h1>康复追踪平台</h1>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="phone" placeholder="请输入手机号" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="text" id="verifyCode" placeholder="验证码">
+                    <button type="button" id="sendCode">发送验证码</button>
+                </div>
+                <button type="submit" class="login-btn">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="mainApp" class="page">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="user-info">
+                <span id="userName">用户</span>
+                <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </button>
+            <button class="nav-item" data-page="record">
+                <i class="fas fa-plus-circle"></i>
+                <span>记录</span>
+            </button>
+            <button class="nav-item" data-page="trends">
+                <i class="fas fa-chart-line"></i>
+                <span>趋势</span>
+            </button>
+            <button class="nav-item" data-page="recovery-plan">
+                <i class="fas fa-clipboard-list"></i>
+                <span>康复计划</span>
+            </button>
+            <button class="nav-item" data-page="reports">
+                <i class="fas fa-file-medical"></i>
+                <span>检查报告</span>
+            </button>
+            <button class="nav-item" data-page="ai-chat">
+                <i class="fas fa-robot"></i>
+                <span>AI助手</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+
+        <!-- 页面内容 -->
+        <main class="main-content">
+            <!-- 首页 -->
+            <div id="dashboard" class="content-page active">
+                <div class="dashboard-header">
+                    <h2>今日概览</h2>
+                    <div class="date" id="currentDate"></div>
+                </div>
+                
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-heartbeat"></i>
+                        <div>
+                            <span class="stat-value" id="lastHeartRate">--</span>
+                            <span class="stat-label">心率</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-weight"></i>
+                        <div>
+                            <span class="stat-value" id="lastWeight">--</span>
+                            <span class="stat-label">体重</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-thermometer-half"></i>
+                        <div>
+                            <span class="stat-value" id="lastTemp">--</span>
+                            <span class="stat-label">体温</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alerts" id="alertsContainer"></div>
+
+                <div class="daily-education" id="dailyEducation">
+                    <h3><i class="fas fa-graduation-cap"></i> 今日健康课堂</h3>
+                    <div class="education-card" id="educationCard">
+                        <div class="education-content">正在为您推送个性化健康知识...</div>
+                        <button class="read-more" onclick="showEducationDetail()">阅读全文</button>
+                    </div>
+                </div>
+
+                <div class="smart-reminders" id="smartReminders">
+                    <h3><i class="fas fa-bell"></i> 智能提醒</h3>
+                    <div class="reminder-list" id="reminderList">正在生成个性化提醒...</div>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="switchPage('record')">
+                        <i class="fas fa-plus"></i>
+                        <span>添加记录</span>
+                    </button>
+                    <button class="action-btn" onclick="switchPage('reports')">
+                        <i class="fas fa-upload"></i>
+                        <span>上传报告</span>
+                    </button>
+                    <button class="action-btn" onclick="switchPage('ai-chat')">
+                        <i class="fas fa-comments"></i>
+                        <span>心理咨询</span>
+                    </button>
+                    <button class="action-btn" onclick="openDoctorChat()">
+                        <i class="fas fa-user-md"></i>
+                        <span>医生问诊</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 记录页面 -->
+            <div id="record" class="content-page">
+                <h2>健康记录</h2>
+                <form id="healthForm">
+                    <div class="form-section">
+                        <h3>基础体征</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>心率 (次/分)</label>
+                                <input type="number" name="heartRate" min="40" max="200">
+                            </div>
+                            <div class="form-group">
+                                <label>体重 (kg)</label>
+                                <input type="number" name="weight" step="0.1" min="20" max="200">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>体温 (°C)</label>
+                                <input type="number" name="temperature" step="0.1" min="35" max="42">
+                            </div>
+                            <div class="form-group">
+                                <label>血压</label>
+                                <div class="bp-inputs">
+                                    <input type="number" name="systolic" placeholder="收缩压" min="60" max="250">
+                                    <span>/</span>
+                                    <input type="number" name="diastolic" placeholder="舒张压" min="40" max="150">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>症状记录</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>疼痛程度 (0-10分)</label>
+                                <input type="range" name="painLevel" min="0" max="10" value="0">
+                                <span id="painValue">0</span>
+                            </div>
+                            <div class="form-group">
+                                <label>疲劳程度 (0-10分)</label>
+                                <input type="range" name="fatigueLevel" min="0" max="10" value="0">
+                                <span id="fatigueValue">0</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>睡眠质量 (0-10分)</label>
+                                <input type="range" name="sleepQuality" min="0" max="10" value="5">
+                                <span id="sleepValue">5</span>
+                            </div>
+                            <div class="form-group">
+                                <label>食欲状况</label>
+                                <select name="appetite">
+                                    <option value="">请选择</option>
+                                    <option value="很好">很好</option>
+                                    <option value="良好">良好</option>
+                                    <option value="一般">一般</option>
+                                    <option value="较差">较差</option>
+                                    <option value="很差">很差</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>心情状态</label>
+                                <select name="mood">
+                                    <option value="">请选择</option>
+                                    <option value="很好">很好 😊</option>
+                                    <option value="良好">良好 🙂</option>
+                                    <option value="一般">一般 😐</option>
+                                    <option value="较差">较差 😔</option>
+                                    <option value="很差">很差 😢</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>今日步数</label>
+                                <input type="number" name="steps" min="0" max="50000" placeholder="步数">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>检验指标（可选）</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>白细胞 (×10⁹/L)</label>
+                                <input type="number" name="wbc" step="0.1" min="0" max="50">
+                            </div>
+                            <div class="form-group">
+                                <label>血红蛋白 (g/L)</label>
+                                <input type="number" name="hemoglobin" min="0" max="200">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>血小板 (×10⁹/L)</label>
+                                <input type="number" name="platelet" min="0" max="1000">
+                            </div>
+                            <div class="form-group">
+                                <label>白蛋白 (g/L)</label>
+                                <input type="number" name="albumin" step="0.1" min="0" max="60">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">保存记录</button>
+                </form>
+            </div>
+
+            <!-- 趋势页面 -->
+            <div id="trends" class="content-page">
+                <h2>健康趋势</h2>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+                <div class="trend-summary" id="trendSummary"></div>
+            </div>
+
+            <!-- 康复计划页面 -->
+            <div id="recovery-plan" class="content-page">
+                <h2>个性化康复计划</h2>
+                
+                <div class="plan-summary" id="planSummary">
+                    <div class="plan-card">
+                        <h3><i class="fas fa-utensils"></i> 今日营养计划</h3>
+                        <div id="nutritionPlan">正在生成个性化营养建议...</div>
+                    </div>
+                    
+                    <div class="plan-card">
+                        <h3><i class="fas fa-running"></i> 今日运动计划</h3>
+                        <div id="exercisePlan">正在生成个性化运动建议...</div>
+                    </div>
+                    
+                    <div class="plan-card">
+                        <h3><i class="fas fa-heart"></i> 注意事项</h3>
+                        <div id="healthTips">正在分析您的健康状况...</div>
+                    </div>
+                </div>
+                
+                <div class="plan-progress">
+                    <h3>今日完成情况</h3>
+                    <div class="progress-items" id="progressItems">
+                        <div class="progress-item">
+                            <span>营养摄入</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <button class="mark-done" onclick="markProgress('nutrition')">完成</button>
+                        </div>
+                        <div class="progress-item">
+                            <span>运动锻炼</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <button class="mark-done" onclick="markProgress('exercise')">完成</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-feedback" id="doctorFeedback">
+                    <h3>医生建议</h3>
+                    <div class="feedback-content">暂无医生反馈</div>
+                </div>
+            </div>
+
+            <!-- 检查报告页面 -->
+            <div id="reports" class="content-page">
+                <h2>检查报告管理</h2>
+                
+                <div class="upload-section">
+                    <h3>上传新报告</h3>
+                    <div class="upload-area" onclick="document.getElementById('reportFile').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>点击上传检查报告（支持PDF、图片）</p>
+                        <input type="file" id="reportFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="uploadReport(this)">
+                    </div>
+                    
+                    <div class="manual-input">
+                        <h4>手动输入关键指标</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>CEA (μg/L)</label>
+                                <input type="number" id="cea" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>CA199 (U/mL)</label>
+                                <input type="number" id="ca199" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>ALT (U/L)</label>
+                                <input type="number" id="alt">
+                            </div>
+                            <div class="form-group">
+                                <label>肌酮 (umol/L)</label>
+                                <input type="number" id="creatinine">
+                            </div>
+                        </div>
+                        <button class="submit-btn" onclick="saveLabResults()">保存指标</button>
+                    </div>
+                </div>
+                
+                <div class="reports-history">
+                    <h3>历史报告</h3>
+                    <div class="reports-list" id="reportsList">暂无报告记录</div>
+                </div>
+                
+                <div class="ai-interpretation" id="aiInterpretation">
+                    <h3>AI报告解读</h3>
+                    <div class="interpretation-content">请上传或输入检查数据后查看AI解读</div>
+                </div>
+            </div>
+
+            <!-- AI助手页面 -->
+            <div id="ai-chat" class="content-page">
+                <div class="chat-header">
+                    <h2>AI健康助手</h2>
+                    <div class="chat-tabs">
+                        <button class="tab-btn active" data-mode="health">健康咨询</button>
+                        <button class="tab-btn" data-mode="psychology">心理支持</button>
+                    </div>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="输入您的问题...">
+                        <button id="voiceBtn" onclick="toggleVoiceInput()"><i class="fas fa-microphone"></i></button>
+                        <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                
+                <!-- 医生问诊模块 -->
+                <div class="doctor-chat" id="doctorChat" style="display:none">
+                    <div class="chat-header">
+                        <h3>医生问诊</h3>
+                        <button class="close-btn" onclick="closeDoctorChat()">×</button>
+                    </div>
+                    <div class="doctor-messages" id="doctorMessages"></div>
+                    <div class="doctor-input">
+                        <input type="text" id="doctorMessageInput" placeholder="描述您的症状或问题...">
+                        <button onclick="sendDoctorMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 个人资料页面 -->
+            <div id="profile" class="content-page">
+                <h2>个人资料</h2>
+                <div class="profile-section">
+                    <div class="profile-item">
+                        <label>姓名</label>
+                        <input type="text" id="profileName" placeholder="请输入姓名">
+                    </div>
+                    <div class="profile-item">
+                        <label>年龄</label>
+                        <input type="number" id="profileAge" placeholder="请输入年龄">
+                    </div>
+                    <div class="profile-item">
+                        <label>诊断</label>
+                        <input type="text" id="profileDiagnosis" placeholder="请输入诊断信息">
+                    </div>
+                    <div class="profile-item">
+                        <label>治疗阶段</label>
+                        <select id="profileStage">
+                            <option value="">请选择</option>
+                            <option value="术前">术前</option>
+                            <option value="术后">术后</option>
+                            <option value="化疗中">化疗中</option>
+                            <option value="放疗中">放疗中</option>
+                            <option value="康复期">康复期</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="saveProfile()">保存资料</button>
+                    
+                    <div class="points-section">
+                        <h3>我的积分</h3>
+                        <div class="points-display">
+                            <span class="points-value" id="userPoints">0</span>
+                            <span class="points-label">分</span>
+                        </div>
+                        <div class="points-tasks">
+                            <div class="task-item">
+                                <span>每日记录体征</span>
+                                <span class="task-points">+10分</span>
+                            </div>
+                            <div class="task-item">
+                                <span>阅读健康文章</span>
+                                <span class="task-points">+5分</span>
+                            </div>
+                            <div class="task-item">
+                                <span>完成康复任务</span>
+                                <span class="task-points">+15分</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 教育内容详情模态框 -->
+    <div id="educationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEducationModal()">&times;</span>
+            <h3 id="educationTitle">健康教育</h3>
+            <div id="educationFullContent">加载中...</div>
+            <div class="modal-actions">
+                <button onclick="likeEducation()">点赞 ❤️</button>
+                <button onclick="collectEducation()">收藏 ⭐</button>
+                <button onclick="closeEducationModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
